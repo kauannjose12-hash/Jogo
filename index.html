@@ -3331,7 +3331,7 @@
         }
 
         // =========================================================================
-        // RENDERIZAÇÃO LIMPA DOS PAINÉIS: ESCOLA, FACULDADE, CARREIRA E HABILIDADES
+        // RENDERIZAÇÃO LIMPA DOS PAINÉIS: ESCOLA, FACULDADE, CARREIRA
         // =========================================================================
         function renderCareerModal() {
             const sim = GAME.sims[GAME.activeSimIndex];
@@ -3342,7 +3342,7 @@
                 school: "ESCOLA & BOLETIM ESCOLAR",
                 university: "FACULDADE & GRADUAÇÃO",
                 career: "CARREIRA PROFISSIONAL (6 ETAPAS)",
-                skills: "HABILIDADES DO SIM"
+                
             };
             const modalTitleEl = document.getElementById('ce-modal-title');
             if (modalTitleEl) modalTitleEl.textContent = titleMap[activeCareerTab] || "ESCOLA, FACULDADE & CARREIRA";
@@ -3367,7 +3367,96 @@
             const body = document.getElementById('ce-modal-body');
             if (!body) return;
 
-            // 1) PAINEL ESCOLA
+            // 1) PAINEL ESCOLA// ==========================================
+        // SISTEMA DE CARREIRA E ETAPAS PROFISSIONAIS
+        // ==========================================
+        const CAREER_DATABASE = {
+            education: {
+                name: "Educação (Professor)",
+                steps: [
+                    { level: 1, title: "Estagiário de Pedagogia / Auxiliar de Sala", salary: 250 },
+                    { level: 2, title: "Professor Substituto / Monitor", salary: 500 },
+                    { level: 3, title: "Professor Titular do Fundamental", salary: 950 },
+                    { level: 4, title: "Diretor Escolar / Reitor", salary: 1800 }
+                ]
+            },
+            architecture: {
+                name: "Arquitetura e Urbanismo",
+                steps: [
+                    { level: 1, title: "Estagiário Cadista", salary: 280 },
+                    { level: 2, title: "Projetista Júnior", salary: 550 },
+                    { level: 3, title: "Arquiteto Sênior", salary: 1100 },
+                    { level: 4, title: "Arquiteto Chefe / Urbanista", salary: 2200 }
+                ]
+            },
+            law: {
+                name: "Direito e Criminologia",
+                steps: [
+                    { level: 1, title: "Cadete / Patrulheiro", salary: 300 },
+                    { level: 2, title: "Investigador", salary: 600 },
+                    { level: 3, title: "Inspetor de Polícia", salary: 1200 },
+                    { level: 4, title: "Delegado Titular", salary: 2500 }
+                ]
+            }
+        };
+
+        function toggleCareerModal(open) {
+            const modal = document.getElementById('career-modal');
+            if (open) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                renderCareerUI();
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function renderCareerUI() {
+            const activeSim = GAME.sims[GAME.activeSimIndex];
+            const infoTitle = document.getElementById('current-sim-career-title');
+            const infoDesc = document.getElementById('current-sim-step-desc');
+            const container = document.getElementById('career-list-container');
+            
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (activeSim.careerLevel && activeSim.careerLevel > 0) {
+                const careerData = CAREER_DATABASE[activeSim.career];
+                const currentStep = careerData.steps[activeSim.careerLevel - 1];
+                infoTitle.textContent = `${activeSim.name} — Carreira: ${careerData.name}`;
+                infoDesc.textContent = `Etapa Atual: ${currentStep.title} (Nível ${activeSim.careerLevel}) | Salário: § ${currentStep.salary} por dia`;
+            } else {
+                infoTitle.textContent = `${activeSim.name} não possui uma carreira ativa`;
+                infoDesc.textContent = `Escolha uma trilha de carreira abaixo para iniciar na Etapa 1:`;
+            }
+
+            Object.keys(CAREER_DATABASE).forEach(key => {
+                const career = CAREER_DATABASE[key];
+                const card = document.createElement('div');
+                card.className = "sims-glass p-3 rounded-2xl border border-cyan-500/30 flex items-center justify-between";
+                
+                card.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-white">${career.name}</span>
+                        <span class="text-[10px] text-cyan-200">Início na Etapa 1: ${career.steps[0].title} (§ ${career.steps[0].salary})</span>
+                    </div>
+                    <button onclick="joinCareer('${key}')" class="sims-btn px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-300 border border-emerald-500/40 cursor-pointer">
+                        Seguir Carreira
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function joinCareer(careerKey) {
+            const activeSim = GAME.sims[GAME.activeSimIndex];
+            activeSim.career = careerKey;
+            activeSim.careerLevel = 1; // Inicia na Etapa 1
+            showToast(`${activeSim.name} iniciou a carreira em ${CAREER_DATABASE[careerKey].name}!`);
+            renderCareerUI();
+        } 
+    
             if (activeCareerTab === 'school') {
                 const letter = getLetterGrade(ec.schoolScore);
                 const hrs = Math.floor(GAME.minutes / 60);

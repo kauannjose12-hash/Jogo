@@ -2693,231 +2693,384 @@
             updateSimCareerTagsHUD();
         }
 
-        // =========================================================================
-        // SISTEMA COMPLETO DE ESCOLA, FACULDADE (5 CURSOS) E CARREIRA (4 ÁREAS)
-        // =========================================================================
-        const LIFE_STAGES = {
-            CHILD: { label: "Criança (Ensino Fundamental)", isSchool: true },
-            TEEN: { label: "Adolescente (Ensino Médio)", isSchool: true },
-            YOUNG_ADULT: { label: "Jovem Adulto", isSchool: false },
-            ADULT: { label: "Adulto", isSchool: false }
-        };
+       // =========================================================================
+// SISTEMA COMPLETO: ESCOLA, FACULDADE E CARREIRA (PRONTA PARA USO)
+// =========================================================================
 
-        const UNIVERSITY_COURSES = {
-            medicina: {
-                id: "medicina",
-                name: "Medicina",
-                icon: "fa-stethoscope",
-                tuition: 1200,
-                desc: "Ciências médicas, clínica geral e cirurgia. Garante ingresso direto no Nível 3 de Medicina.",
-                primarySkills: ["logic", "charisma"],
-                careerId: "medicina"
-            },
-            engenharia: {
-                id: "engenharia",
-                name: "Engenharia & Tecnologia",
-                icon: "fa-microchip",
-                tuition: 950,
-                desc: "Sistemas computacionais, robótica e projetos. Garante ingresso direto no Nível 3 de Tecnologia.",
-                primarySkills: ["logic", "creativity"],
-                careerId: "tecnologia"
-            },
-            artes: {
-                id: "artes",
-                name: "Artes & Gastronomia",
-                icon: "fa-palette",
-                tuition: 750,
-                desc: "Alta gastronomia e design culinário. Garante ingresso direto no Nível 3 de Culinária.",
-                primarySkills: ["creativity", "charisma"],
-                careerId: "culinaria"
-            },
-            direito: {
-                id: "direito",
-                name: "Direito & Negócios",
-                icon: "fa-scale-balanced",
-                tuition: 900,
-                desc: "Gestão corporativa, leis e liderança executiva. Garante ingresso direto no Nível 3 de Negócios.",
-                primarySkills: ["leadership", "charisma"],
-                careerId: "negocios"
-            },
-            tecnologia: {
-                id: "tecnologia",
-                name: "Ciência da Computação",
-                icon: "fa-laptop-code",
-                tuition: 880,
-                desc: "Arquitetura de software, IA e redes. Garante ingresso direto no Nível 3 de Tecnologia.",
-                primarySkills: ["logic", "creativity"],
-                careerId: "tecnologia"
-            }
-        };
+const LIFE_STAGES = {
+    CHILD: { label: 'Criança (Escola)' },
+    TEEN: { label: 'Adolescente (Ensino Médio)' },
+    YOUNG_ADULT: { label: 'Jovem Adulto' },
+    ADULT: { label: 'Adulto' }
+};
 
-        const CAREER_TREES = {
-            culinaria: {
-                id: "culinaria",
-                name: "Culinária",
-                courseId: "artes",
-                icon: "fa-utensils",
-                schedule: "Seg a Sex • 09:00 às 17:00",
-                startHour: 9,
-                endHour: 17,
-                steps: [
-                    { level: 1, title: "Estagiário de Cozinha", wagePerDay: 120, reqMood: 50, reqSkills: { creativity: 1 }, desc: "Lavagem de utensílios, mise en place e corte básico." },
-                    { level: 2, title: "Assistente de Chef", wagePerDay: 240, reqMood: 55, reqSkills: { creativity: 2, logic: 2 }, desc: "Preparo de molhos, guarnições e controle de estoque." },
-                    { level: 3, title: "Cozinheiro Júnior", wagePerDay: 430, reqMood: 60, reqSkills: { creativity: 3, charisma: 2 }, desc: "Comanda praça quente e pratos principais do cardápio." },
-                    { level: 4, title: "Especialista Gastronômico", wagePerDay: 720, reqMood: 65, reqSkills: { creativity: 5, logic: 4 }, desc: "Criação de pratos autorais e harmonização gourmet." },
-                    { level: 5, title: "Gerente de Restaurante", wagePerDay: 1120, reqMood: 70, reqSkills: { creativity: 6, leadership: 5, charisma: 5 }, desc: "Coordenação completa da brigada e qualidade do salão." },
-                    { level: 6, title: "Diretor Executivo Gastronômico", wagePerDay: 1650, reqMood: 75, reqSkills: { creativity: 8, leadership: 7, charisma: 6 }, desc: "Topo da gastronomia internacional com estrelas premiadas." }
-                ]
-            },
-            tecnologia: {
-                id: "tecnologia",
-                name: "Tecnologia",
-                courseId: "tecnologia",
-                icon: "fa-microchip",
-                schedule: "Seg a Sex • 09:00 às 17:00",
-                startHour: 9,
-                endHour: 17,
-                steps: [
-                    { level: 1, title: "Estagiário de TI", wagePerDay: 130, reqMood: 50, reqSkills: { logic: 1 }, desc: "Manutenção de equipamentos e testes básicos de sistema." },
-                    { level: 2, title: "Assistente de Desenvolvimento", wagePerDay: 260, reqMood: 55, reqSkills: { logic: 2, creativity: 2 }, desc: "Correção de bugs e implementação de interfaces." },
-                    { level: 3, title: "Desenvolvedor Júnior", wagePerDay: 480, reqMood: 60, reqSkills: { logic: 3, creativity: 3 }, desc: "Desenvolvimento de módulos completos e APIs." },
-                    { level: 4, title: "Engenheiro de Software Pleno", wagePerDay: 810, reqMood: 65, reqSkills: { logic: 5, creativity: 4, leadership: 3 }, desc: "Arquitetura de sistemas escaláveis e segurança digital." },
-                    { level: 5, title: "Gerente de Engenharia", wagePerDay: 1240, reqMood: 70, reqSkills: { logic: 7, leadership: 5, charisma: 4 }, desc: "Liderança de squads ágeis e entregas estratégicas." },
-                    { level: 6, title: "Diretor Executivo (CTO)", wagePerDay: 1850, reqMood: 75, reqSkills: { logic: 9, leadership: 7, creativity: 6 }, desc: "Comando global de inovação e inteligência artificial." }
-                ]
-            },
-            medicina: {
-                id: "medicina",
-                name: "Medicina",
-                courseId: "medicina",
-                icon: "fa-heart-pulse",
-                schedule: "Seg a Sex • 08:00 às 16:00",
-                startHour: 8,
-                endHour: 16,
-                steps: [
-                    { level: 1, title: "Estagiário de Triagem", wagePerDay: 135, reqMood: 50, reqSkills: { logic: 1 }, desc: "Aferição de sinais vitais e organização de prontuários." },
-                    { level: 2, title: "Assistente Clínico", wagePerDay: 280, reqMood: 55, reqSkills: { logic: 3, charisma: 2 }, desc: "Apoio em exames diagnósticos e atendimento ambulatorial." },
-                    { level: 3, title: "Médico Residente Júnior", wagePerDay: 520, reqMood: 60, reqSkills: { logic: 4, charisma: 3 }, desc: "Plantões hospitalares e acompanhamento de pacientes." },
-                    { level: 4, title: "Médico Especialista Pleno", wagePerDay: 880, reqMood: 65, reqSkills: { logic: 6, charisma: 4, leadership: 3 }, desc: "Diagnósticos complexos e procedimentos especializados." },
-                    { level: 5, title: "Gerente Clínico / Chefe de Ala", wagePerDay: 1320, reqMood: 70, reqSkills: { logic: 7, leadership: 6, charisma: 5 }, desc: "Gestão das equipes médicas e protocolos hospitalares." },
-                    { level: 6, title: "Diretor Executivo Hospitalar", wagePerDay: 1950, reqMood: 75, reqSkills: { logic: 9, leadership: 8, charisma: 7 }, desc: "Autoridade máxima médica e diretor geral do complexo." }
-                ]
-            },
-            negocios: {
-                id: "negocios",
-                name: "Negócios",
-                courseId: "direito",
-                icon: "fa-briefcase",
-                schedule: "Seg a Sex • 09:00 às 17:00",
-                startHour: 9,
-                endHour: 17,
-                steps: [
-                    { level: 1, title: "Estagiário Administrativo", wagePerDay: 125, reqMood: 50, reqSkills: { charisma: 1 }, desc: "Arquivamento, planilhas e atendimento telefônico." },
-                    { level: 2, title: "Assistente Comercial", wagePerDay: 250, reqMood: 55, reqSkills: { charisma: 2, logic: 2 }, desc: "Prospecção de clientes e relatórios financeiros." },
-                    { level: 3, title: "Analista de Negócios Júnior", wagePerDay: 460, reqMood: 60, reqSkills: { charisma: 3, leadership: 2, logic: 3 }, desc: "Negociação de contratos e análise de mercado." },
-                    { level: 4, title: "Consultor Corporativo Pleno", wagePerDay: 790, reqMood: 65, reqSkills: { charisma: 5, leadership: 4, logic: 4 }, desc: "Estratégias de expansão e fusões empresariais." },
-                    { level: 5, title: "Gerente Geral de Operações", wagePerDay: 1210, reqMood: 70, reqSkills: { leadership: 6, charisma: 6, logic: 5 }, desc: "Direção de departamentos e metas trimestrais." },
-                    { level: 6, title: "Diretor Executivo (CEO)", wagePerDay: 1800, reqMood: 75, reqSkills: { leadership: 8, charisma: 8, logic: 6 }, desc: "Presidente do conselho e líder máximo da corporação." }
-                ]
-            }
-        };
+const UNIVERSITY_COURSES = {
+    medicine: { id: 'medicine', name: 'Medicina', icon: 'fa-heart-pulse', tuition: 800, careerId: 'medicine', desc: 'Forma médicos e cirurgiões. Começa a carreira no Nível 3!' },
+    tech: { id: 'tech', name: 'Engenharia de Software', icon: 'fa-laptop-code', tuition: 650, careerId: 'tech', desc: 'Especialização em sistemas e IA. Começa no Nível 3!' },
+    culinary: { id: 'culinary', name: 'Gastronomia', icon: 'fa-utensils', tuition: 500, careerId: 'culinary', desc: 'Alta cozinha internacional. Começa no Nível 3!' },
+    business: { id: 'business', name: 'Administração & Negócios', icon: 'fa-briefcase', tuition: 600, careerId: 'business', desc: 'Gestão executiva e finanças. Começa no Nível 3!' }
+};
 
-        const SCHOOL_BEHAVIORS = {
-            HARD: { label: "Esforçar-se Muito", desc: "Sobe nota rápido, desce Diversão" },
-            NORMAL: { label: "Estudar Normal", desc: "Equilíbrio entre nota e energia" },
-            SLACK: { label: "Conversar na Aula", desc: "Sobe Diversão, desce nota" }
-        };
+const CAREER_TREES = {
+    culinary: {
+        id: 'culinary', name: 'Gastronomia & Culinária', icon: 'fa-utensils',
+        steps: [
+            { level: 1, title: 'Estagiário de Cozinha', wagePerDay: 120, hours: '09:00 - 15:00' },
+            { level: 2, title: 'Auxiliar de Preparo', wagePerDay: 240, hours: '09:00 - 16:00' },
+            { level: 3, title: 'Cozinheiro Júnior', wagePerDay: 450, hours: '10:00 - 17:00' },
+            { level: 4, title: 'Chef de Partida', wagePerDay: 780, hours: '11:00 - 18:00' },
+            { level: 5, title: 'Subchef Executivo', wagePerDay: 1250, hours: '12:00 - 19:00' },
+            { level: 6, title: 'Chef Celebridade 5 Estrelas', wagePerDay: 2100, hours: '13:00 - 19:00' }
+        ]
+    },
+    tech: {
+        id: 'tech', name: 'Tecnologia & Programação', icon: 'fa-microchip',
+        steps: [
+            { level: 1, title: 'Estagiário de Suporte', wagePerDay: 150, hours: '09:00 - 15:00' },
+            { level: 2, title: 'Técnico de Sistemas', wagePerDay: 300, hours: '09:00 - 16:00' },
+            { level: 3, title: 'Desenvolvedor Júnior', wagePerDay: 550, hours: '09:00 - 17:00' },
+            { level: 4, title: 'Engenheiro Pleno', wagePerDay: 920, hours: '10:00 - 17:00' },
+            { level: 5, title: 'Arquiteto de Software', wagePerDay: 1450, hours: '10:00 - 17:00' },
+            { level: 6, title: 'Diretor de Tecnologia (CTO)', wagePerDay: 2400, hours: '10:00 - 16:00' }
+        ]
+    },
+    medicine: {
+        id: 'medicine', name: 'Medicina & Saúde', icon: 'fa-stethoscope',
+        steps: [
+            { level: 1, title: 'Estagiário de Enfermagem', wagePerDay: 160, hours: '08:00 - 14:00' },
+            { level: 2, title: 'Paramédico', wagePerDay: 320, hours: '08:00 - 15:00' },
+            { level: 3, title: 'Médico Residente', wagePerDay: 600, hours: '08:00 - 16:00' },
+            { level: 4, title: 'Clínico Geral', wagePerDay: 1050, hours: '09:00 - 16:00' },
+            { level: 5, title: 'Cirurgião Especialista', wagePerDay: 1650, hours: '09:00 - 16:00' },
+            { level: 6, title: 'Diretor Chefe do Hospital', wagePerDay: 2700, hours: '10:00 - 16:00' }
+        ]
+    },
+    business: {
+        id: 'business', name: 'Negócios & Corporativo', icon: 'fa-chart-line',
+        steps: [
+            { level: 1, title: 'Estagiário Administrativo', wagePerDay: 130, hours: '09:00 - 15:00' },
+            { level: 2, title: 'Assistente de Escritório', wagePerDay: 260, hours: '09:00 - 16:00' },
+            { level: 3, title: 'Analista Júnior', wagePerDay: 480, hours: '09:00 - 17:00' },
+            { level: 4, title: 'Coordenador de Projetos', wagePerDay: 850, hours: '09:00 - 17:00' },
+            { level: 5, title: 'Gerente Regional', wagePerDay: 1350, hours: '09:00 - 17:00' },
+            { level: 6, title: 'CEO Executivo', wagePerDay: 2250, hours: '10:00 - 16:00' }
+        ]
+    }
+};
 
-        const WORK_BEHAVIORS = {
-            HARD: { label: "Trabalhar Duro", desc: "Sobe desempenho rápido, cansa mais" },
-            NORMAL: { label: "Trabalho Normal", desc: "Ritmo padrão e estável" },
-            SUCK_UP: { label: "Puxar Saco do Chefe", desc: "Melhora relação profissional e Carisma" }
-        };
+let activeCareerTab = 'school';
 
-        const SKILL_META = {
-            logic: { label: "Lógica", icon: "fa-brain", color: "bg-sky-400" },
-            charisma: { label: "Carisma", icon: "fa-comments", color: "bg-pink-400" },
-            creativity: { label: "Criatividade", icon: "fa-palette", color: "bg-amber-400" },
-            leadership: { label: "Liderança", icon: "fa-crown", color: "bg-emerald-400" }
-        };
+function initSimEducationAndCareer(sim, defaults = {}) {
+    sim.eduCareer = {
+        lifeStage: defaults.lifeStage || 'YOUNG_ADULT',
+        schoolScore: defaults.schoolScore ?? 7.0,
+        schoolAttendance: defaults.schoolAttendance ?? 90,
+        enrolledCourse: defaults.enrolledCourse || null,
+        uniSemester: defaults.uniSemester || 1,
+        uniSemesterProgress: defaults.uniSemesterProgress || 0,
+        uniGrade: defaults.uniGrade || 7.5,
+        diplomas: defaults.diplomas || [],
+        careerId: defaults.careerId || null,
+        careerLevel: defaults.careerLevel || 1,
+        workPerformance: defaults.workPerformance || 0
+    };
+}
 
-        let activeCareerTab = 'school';
+function getLetterGrade(score) {
+    if (score >= 9.5) return { grade: 'A+', color: 'text-emerald-400', discount: 0.7 };
+    if (score >= 9.0) return { grade: 'A', color: 'text-emerald-300', discount: 0.7 };
+    if (score >= 7.5) return { grade: 'B', color: 'text-cyan-300', discount: 0.2 };
+    if (score >= 6.0) return { grade: 'C', color: 'text-amber-300', discount: 0 };
+    if (score >= 4.0) return { grade: 'D', color: 'text-orange-400', discount: 0 };
+    return { grade: 'F', color: 'text-rose-500', discount: 0 };
+}
 
-        function initSimEducationAndCareer(sim, preset = {}) {
-            sim.eduCareer = {
-                lifeStage: preset.lifeStage || 'YOUNG_ADULT',
-                schoolScore: preset.schoolScore ?? 68, // 68 = Nota C
-                schoolAttendance: preset.schoolAttendance ?? 80,
-                studyHours: preset.studyHours ?? 2,
-                atSchool: false,
-                schoolBehavior: 'NORMAL',
-                honorRollUnlocked: false,
-                xp: preset.xp ?? 100,
-                graduatedHighSchool: preset.graduatedHighSchool ?? false,
-                enrolledCourse: null,
-                uniSemester: 1,
-                uniSemesterProgress: 0,
-                uniGPA: 7.0,
-                uniExamsDone: 0,
-                diplomas: [],
-                careerId: null,
-                careerLevel: 0,
-                workPerformance: 0,
-                bossRelation: 50,
-                atWork: false,
-                workBehavior: 'NORMAL',
-                daysWorked: 0,
-                skills: {
-                    logic: preset.skills?.logic ?? 2,
-                    charisma: preset.skills?.charisma ?? 2,
-                    creativity: preset.skills?.creativity ?? 2,
-                    leadership: preset.skills?.leadership ?? 1
-                }
-            };
+function getActiveSimSafe() {
+    if (typeof GAME === 'undefined' || !GAME.sims) return null;
+    const sim = GAME.sims[GAME.activeSimIndex || 0];
+    if (sim && !sim.eduCareer) initSimEducationAndCareer(sim);
+    return sim;
+}
+
+function openEducationCareerModal(tabName) {
+    if (tabName) activeCareerTab = tabName;
+    const modal = document.getElementById('ce-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.pointerEvents = 'auto';
+        modal.style.zIndex = '10000';
+    }
+    renderCareerModal();
+}
+
+function closeEducationCareerModal() {
+    const modal = document.getElementById('ce-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        modal.style.pointerEvents = 'none';
+    }
+}
+
+function changeSimLifeStage(stage) {
+    const sim = getActiveSimSafe();
+    if (!sim) return;
+    sim.eduCareer.lifeStage = stage;
+    renderCareerModal();
+}
+
+// --- FUNÇÕES DA ESCOLA ---
+function performDoHomework() {
+    const sim = getActiveSimSafe();
+    if (!sim) return;
+    sim.eduCareer.schoolScore = Math.min(10, Number((sim.eduCareer.schoolScore + 0.8).toFixed(1)));
+    if (sim.needs) sim.needs.fun = Math.max(0, (sim.needs.fun || 70) - 8);
+    showToastMsg(`${sim.name} fez a lição de casa! Nota atual: ${getLetterGrade(sim.eduCareer.schoolScore).grade} (${sim.eduCareer.schoolScore})`);
+    renderCareerModal();
+}
+
+function attendSchoolClass(attitude) {
+    const sim = getActiveSimSafe();
+    if (!sim) return;
+    let delta = 0.5;
+    if (attitude === 'hard') {
+        delta = 1.1;
+        if (sim.needs) {
+            sim.needs.fun = Math.max(0, (sim.needs.fun || 70) - 15);
+            sim.needs.energy = Math.max(0, (sim.needs.energy || 80) - 12);
         }
+    } else if (attitude === 'slack') {
+        delta = -0.6;
+        if (sim.needs) sim.needs.fun = Math.min(100, (sim.needs.fun || 70) + 15);
+    }
+    sim.eduCareer.schoolScore = Math.max(0, Math.min(10, Number((sim.eduCareer.schoolScore + delta).toFixed(1))));
+    showToastMsg(`Dia de aula concluído! Nota: ${getLetterGrade(sim.eduCareer.schoolScore).grade}`);
+    renderCareerModal();
+}
 
-        function getSimMoodAverage(sim) {
-            const n = sim.needs;
-            return Math.round((n.hunger + n.energy + n.hygiene + n.bladder + n.social + n.fun) / 6);
+// --- FUNÇÕES DA FACULDADE ---
+function enrollUniversityCourse(courseId) {
+    const sim = getActiveSimSafe();
+    const course = UNIVERSITY_COURSES[courseId];
+    if (!sim || !course) return;
+
+    const letter = getLetterGrade(sim.eduCareer.schoolScore);
+    const finalPrice = Math.round(course.tuition * (1 - letter.discount));
+
+    if (typeof GAME !== 'undefined' && GAME.funds < finalPrice) {
+        showToastMsg(`Saldo insuficiente! Você precisa de § ${finalPrice}.`);
+        return;
+    }
+
+    if (typeof GAME !== 'undefined') GAME.funds -= finalPrice;
+    sim.eduCareer.enrolledCourse = courseId;
+    sim.eduCareer.uniSemester = 1;
+    sim.eduCareer.uniSemesterProgress = 0;
+    sim.eduCareer.uniGrade = 7.0;
+
+    showToastMsg(`Matrícula realizada em ${course.name} por § ${finalPrice}!`);
+    renderCareerModal();
+}
+
+function studyForUniversityExam() {
+    const sim = getActiveSimSafe();
+    if (!sim || !sim.eduCareer.enrolledCourse) return;
+    sim.eduCareer.uniSemesterProgress = Math.min(100, sim.eduCareer.uniSemesterProgress + 35);
+    sim.eduCareer.uniGrade = Math.min(10, Number((sim.eduCareer.uniGrade + 0.6).toFixed(1)));
+    if (sim.needs) sim.needs.energy = Math.max(0, (sim.needs.energy || 80) - 10);
+    showToastMsg(`${sim.name} estudou para as provas! Progresso: ${sim.eduCareer.uniSemesterProgress}%`);
+    renderCareerModal();
+}
+
+function takeSemesterFinalExam() {
+    const sim = getActiveSimSafe();
+    const ec = sim?.eduCareer;
+    if (!ec || !ec.enrolledCourse) return;
+
+    if (ec.uniSemesterProgress < 100) {
+        showToastMsg('Estude até atingir 100% de progresso antes de fazer a prova final!');
+        return;
+    }
+
+    if (ec.uniSemester < 4) {
+        ec.uniSemester += 1;
+        ec.uniSemesterProgress = 0;
+        showToastMsg(`Aprovado! Avançou para o Semestre ${ec.uniSemester}/4!`);
+    } else {
+        const course = UNIVERSITY_COURSES[ec.enrolledCourse];
+        if (!ec.diplomas.includes(ec.enrolledCourse)) {
+            ec.diplomas.push(ec.enrolledCourse);
         }
+        ec.enrolledCourse = null;
+        ec.uniSemester = 1;
+        ec.uniSemesterProgress = 0;
+        showToastMsg(`🎓 PARABÉNS! ${sim.name} se formou em ${course.name} e ganhou o Diploma!`);
+    }
+    renderCareerModal();
+}
 
-        function getLetterGrade(score) {
-            if (score >= 95) return { grade: "A+", color: "text-emerald-300", nextLabel: "Nota Máxima!", progressPct: 100 };
-            if (score >= 86) return { grade: "A", color: "text-emerald-400", nextLabel: "Próxima: A+ (95%)", progressPct: Math.round(((score - 86) / 9) * 100) };
-            if (score >= 76) return { grade: "B", color: "text-cyan-300", nextLabel: "Próxima: A (86%)", progressPct: Math.round(((score - 76) / 10) * 100) };
-            if (score >= 62) return { grade: "C", color: "text-amber-300", nextLabel: "Próxima: B (76%)", progressPct: Math.round(((score - 62) / 14) * 100) };
-            if (score >= 50) return { grade: "D", color: "text-orange-400", nextLabel: "Próxima: C (62%)", progressPct: Math.round(((score - 50) / 12) * 100) };
-            return { grade: "F", color: "text-rose-400", nextLabel: "Próxima: D (50%)", progressPct: Math.round((score / 50) * 100) };
-        }
+// --- FUNÇÕES DA CARREIRA ---
+function joinCareer(careerId) {
+    const sim = getActiveSimSafe();
+    const tree = CAREER_TREES[careerId];
+    if (!sim || !tree) return;
 
-        function hasHighGradeDiscount(ec) {
-            const g = getLetterGrade(ec.schoolScore).grade;
-            return (g === "A" || g === "A+");
-        }
+    const hasDiploma = sim.eduCareer.diplomas.includes(careerId);
+    sim.eduCareer.careerId = careerId;
+        sim.eduCareer.careerLevel = hasDiploma ? 3 : 1;
+sim.eduCareer.workPerformance = 0;
+const cargo = tree.steps[sim.eduCareer.careerLevel - 1];
+showToastMsg(${sim.name} entrou em ${tree.name} como ${cargo.title} (§ ${cargo.wagePerDay}/dia)!);
+renderCareerModal();
+}
+function completeFullWorkDay(attitude = 'normal') {
+const sim = getActiveSimSafe();
+const ec = sim?.eduCareer;
+if (!ec || !ec.careerId) return;
+const tree = CAREER_TREES[ec.careerId];
+const currentStep = tree.steps[ec.careerLevel - 1];
+let perfGain = 35;
+if (attitude === 'hard') {
+perfGain = 55;
+if (sim.needs) {
+sim.needs.energy = Math.max(0, (sim.needs.energy || 80) - 22);
+sim.needs.fun = Math.max(0, (sim.needs.fun || 70) - 18);
+}
+} else if (attitude === 'social') {
+perfGain = 25;
+if (sim.needs) sim.needs.social = Math.min(100, (sim.needs.social || 70) + 20);
+} else {
+if (sim.needs) sim.needs.energy = Math.max(0, (sim.needs.energy || 80) - 14);
+}
+if (typeof GAME !== 'undefined') GAME.funds += currentStep.wagePerDay;
+ec.workPerformance += perfGain;
+if (ec.workPerformance >= 100 && ec.careerLevel < tree.steps.length) {
+ec.careerLevel += 1;
+ec.workPerformance = 0;
+const nextStep = tree.steps[ec.careerLevel - 1];
+const bonus = nextStep.wagePerDay;
+if (typeof GAME !== 'undefined') GAME.funds += bonus;
+showToastMsg(🎉 PROMOÇÃO! Novo cargo: ${nextStep.title} (§ ${nextStep.wagePerDay}/dia) + Bônus de § ${bonus}!);
+} else {
+ec.workPerformance = Math.min(100, ec.workPerformance);
+showToastMsg(Expediente concluído! +§ ${currentStep.wagePerDay} recebidos.);
+}
+renderCareerModal();
+}
+function showToastMsg(text) {
+if (typeof showNotification === 'function') {
+showNotification(text);
+return;
+}
+let toast = document.getElementById('sim-toast-msg');
+if (!toast) {
+toast = document.createElement('div');
+toast.id = 'sim-toast-msg';
+toast.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#0f172a;color:#6ee7b7;border:1px solid #10b981;padding:10px 18px;border-radius:12px;font-weight:bold;font-size:13px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
+document.body.appendChild(toast);
+}
+toast.textContent = text;
+toast.style.display = 'block';
+clearTimeout(toast._timer);
+toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+}
+// --- RENDERIZAÇÃO COMPLETA DA INTERFACE ---
+function renderCareerModal() {
+const sim = getActiveSimSafe();
+if (!sim) return;
+const ec = sim.eduCareer;
+const titleMap = {
+school: 'ESCOLA & BOLETIM ESCOLAR',
+university: 'FACULDADE & GRADUAÇÃO',
+career: 'CARREIRA PROFISSIONAL'
+    };
+const modalTitleEl = document.getElementById('ce-modal-title');
+if (modalTitleEl) modalTitleEl.textContent = titleMap[activeCareerTab] || 'ESCOLA, FACULDADE & CARREIRA';
+const badge = document.getElementById('ce-sim-badge');
+if (badge) badge.textContent = ${sim.name} • ${LIFE_STAGES[ec.lifeStage]?.label || 'Sim'};
+const body = document.getElementById('ce-modal-body');
+if (!body) return;
+body.innerHTML = '';
+if (activeCareerTab === 'school') {
+const letter = getLetterGrade(ec.schoolScore);
+body.innerHTML = <div class="rounded-2xl bg-slate-900/90 border border-teal-500/35 p-4 space-y-3"> <div class="flex flex-wrap items-center justify-between gap-2"> <div> <div class="text-xs font-extrabold text-teal-300 uppercase">Boletim Escolar (Seg a Sex • 08:00 às 14:00)</div> <div class="text-base font-bold text-white mt-1">Nota Atual: <span class="${letter.color} text-2xl font-extrabold">${letter.grade}</span> <span class="text-xs text-slate-300">(${ec.schoolScore}/10)</span></div> </div> <div class="flex gap-1.5 flex-wrap"> ${Object.entries(LIFE_STAGES).map(([k, v]) =>
+${v.label.split(' ')[0]}
+).join('')} </div> </div> <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden"> <div class="h-full bg-teal-400 transition-all" style="width:${ec.schoolScore * 10}%"></div> </div> <div class="text-xs text-amber-200">💡 Tire nota <b>A ou A+ (9.0+)</b> para ganhar <b>70% de desconto</b> na matrícula da faculdade!</div> </div> <div class="flex flex-wrap gap-2 pt-2"> <button onclick="performDoHomework()" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-cyan-400 hover:bg-cyan-300 text-slate-950 cursor-pointer shadow">📖 Fazer Lição de Casa (+Nota)</button> <button onclick="attendSchoolClass('hard')" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-400 text-slate-950 cursor-pointer shadow">🔥 Esforçar-se na Aula</button> <button onclick="attendSchoolClass('normal')" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-slate-700 text-white cursor-pointer">✏️ Aula Normal</button> <button onclick="attendSchoolClass('slack')" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-amber-500 text-slate-950 cursor-pointer">😴 Conversar na Aula (+Diversão)</button> </div> ;
+} else if (activeCareerTab === 'university') {
+const enrolled = ec.enrolledCourse ? UNIVERSITY_COURSES[ec.enrolledCourse] : null;
+const letter = getLetterGrade(ec.schoolScore);
+body.innerHTML = <div class="rounded-2xl bg-slate-900/90 border border-teal-500/35 p-3 mb-3"> <div class="text-xs font-extrabold text-teal-300 uppercase">Ensino Superior & Diplomas</div> <div class="text-xs text-cyan-100 mt-1">Nota Escolar: <b>${letter.grade}</b> • Desconto ativo: <b>${Math.round(letter.discount * 100)}%</b> • Diplomas conquistados: <b>${ec.diplomas.length}</b></div> </div> ${enrolled ?
 
-        function updateSimCareerTagsHUD() {
-            GAME.sims.forEach((sim, idx) => {
-                const tagEl = document.getElementById(`sim-career-tag-${idx}`);
-                if (!tagEl || !sim.eduCareer) return;
-                const ec = sim.eduCareer;
-                const g = getLetterGrade(ec.schoolScore);
-                if (ec.atSchool) {
-                    tagEl.textContent = `Na Escola • ${SCHOOL_BEHAVIORS[ec.schoolBehavior].label}`;
-                } else if (ec.atWork && ec.careerId) {
-                    tagEl.textContent = `Trabalhando • ${Math.round(ec.workPerformance)}%`;
-                } else if (ec.careerId && ec.careerLevel > 0) {
-                    const tree = CAREER_TREES[ec.careerId];
-                    const step = tree.steps[ec.careerLevel - 1];
-                    tagEl.textContent = `Nv.${ec.careerLevel} ${step.title}`;
-                } else if (ec.enrolledCourse) {
-                    const c = UNIVERSITY_COURSES[ec.enrolledCourse];
-                    tagEl.textContent = `${c.name} • Sem ${ec.uniSemester}/4`;
-                } else {
-                    tagEl.textContent = `Escola • Nota ${g.grade}${ec.honorRollUnlocked ? ' ★' : ''}`;
-                }
-            });
-        }
 
+🎓 Cursando: ${enrolled.name}
+Semestre ${ec.uniSemester} de 4
+
+Média Acadêmica: ${ec.uniGrade} | Progresso do Semestre: ${ec.uniSemesterProgress}%
+
+
+
+
+📚 Estudar (+35% Progresso)
+${ec.uniSemester < 4 ? '📝 Fazer Prova Final' : '🎓 Formar-se e Pegar Diploma'}
+   
+: ''} <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"> ${Object.values(UNIVERSITY_COURSES).map(c => { const price = Math.round(c.tuition * (1 - letter.discount)); const hasGrad = ec.diplomas.includes(c.id); return
+
+
+${c.name} ${hasGrad ? '✅' : ''}
+${c.desc}
+Matrícula: § ${price}
+
+Matricular-se
+
+; }).join('')} </div> ;
+} else if (activeCareerTab === 'career') {
+const activeTree = ec.careerId ? CAREER_TREES[ec.careerId] : null;
+const currentStep = activeTree ? activeTree.steps[ec.careerLevel - 1] : null;
+body.innerHTML = ${activeTree ?
+
+
+
+${activeTree.name}
+Nível ${ec.careerLevel}: ${currentStep.title}
+
+
+§ ${currentStep.wagePerDay} / dia
+Expediente: ${currentStep.hours}
+
+
+
+
+Desempenho para Promoção
+${ec.workPerformance}%
+
+
+
+
+
+
+🔥 Trabalhar Duro (+55%)
+💼 Expediente Normal (+35%)
+🗣️ Socializar (+25% / +Social)
+
+
+ESCADA DE PROMOÇÃO (6 ETAPAS):
+
+${activeTree.steps.map(s => <div class="p-2 rounded-lg text-[11px] border ${s.level === ec.careerLevel ? 'bg-emerald-500/20 border-emerald-400 text-white font-bold' : 'bg-slate-900/70 border-slate-700 text-slate-400'}"> Nv.${s.level}: ${s.title} (§${s.wagePerDay}) </div>).join('')}
+
+
+
+: '<div class="text-xs text-cyan-100 bg-slate-900/80 p-3 rounded-xl mb-3">Escolha uma área abaixo. Se você tiver <b>Diploma</b> na área, já começa no <b>Nível 3</b>!</div>'} <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"> ${Object.values(CAREER_TREES).map(tree => { const hasDip = ec.diplomas.includes(tree.id); const startLv = hasDip ? 3 : 1; return
+
+
+${tree.name}
+Início: Nível ${startLv} (${tree.steps[startLv - 1].title})
+Salário inicial: § ${tree.steps[startLv - 1].wagePerDay}/dia
+Candidatar-se
+
+; }).join('')} </div> ;
+}
+        oi
         // Função direta para abrir qualquer aba (Escola, Faculdade ou Carreira)
         function openPanelTab(tabName, ev = null) {
             if (ev && typeof ev.stopPropagation === 'function') {
